@@ -24,7 +24,7 @@ fi
 
 LICENSE="GPL-3"
 SLOT="0"
-IUSE=""
+IUSE="video"
 
 DEPEND="
 	$(vala_depend)
@@ -35,6 +35,7 @@ DEPEND="
 	media-libs/clutter-gtk:1.0[introspection,gtk]
 	media-libs/clutter-gst:3.0[introspection]
 	net-libs/webkit-gtk:4
+	video? ( media-plugins/gst-plugins-libav )
 "
 RDEPEND="${DEPEND}"
 
