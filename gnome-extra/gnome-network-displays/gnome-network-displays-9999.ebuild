@@ -25,7 +25,7 @@ IUSE=""
 #Dependencies:
 #	Video: At least one of openh264 (unsure, media-plugins/gst-plugins-openh264?) or x264 (media-video/x264-encoder) - will work if at least one is installed at runtime.
 #	Audio at least one of fdkaacenc (media-libs/fdk-aac) , faac (2?) (media-libs/faac, use flag faac already exists) or avenc_aac
-#	sys-apps/xdg-desktop-portal to be installed unless using gnome(3?) where x11-wm/mutter should be in use and has the functionality built in.
+#	gnome-base/xdg-desktop-portal-gtk to be installed unless using gnome(3?) where x11-wm/mutter should be in use and has the functionality built in.
 #
 DEPEND=">=net-misc/networkmanager-1.15.2
 net-wireless/wpa_supplicant[p2p]
@@ -33,7 +33,7 @@ media-plugins/gst-plugins-x264
 || ( media-video/x264-encoder media-plugins/gst-plugins-openh264 )
 || ( media-libs/fdk-aac media-libs/faac media-plugins/gst-plugins-libav )
 media-libs/gst-rtsp-server
-|| ( sys-apps/xdg-desktop-portal x11-wm/mutter )"
+|| ( gnome-base/xdg-desktop-portal-gtk[screencast] x11-wm/mutter[screencast] )"
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
