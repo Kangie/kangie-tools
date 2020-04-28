@@ -3,25 +3,23 @@
 
 EAPI=7
 
-inherit git-r3
-
 DESCRIPTION="Sugar Candy theme for SDDM"
 HOMEPAGE="https://www.opencode.net/marianarlt/sddm-sugar-candy"
-#SRC_URI="https://framagit.org/MarianArlt/sddm-sugar-candy/-/archive/v.${PV}/sddm-sugar-candy-v.${PV}.tar.gz -> ${P}.tar.gz"
-EGIT_REPO_URI="https://github.com/Kangie/sddm-sugar-candy.git"
 
 if [[ ${PV} == 9999 ]];then
 	KEYWORDS=""
-else
-	KEYWORDS="~amd64 ~x86"
-	EGIT_COMMIT="refs/tags/v${PV}"
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/Kangie/sddm-sugar-candy.git"
 fi
+
+KEYWORDS="~amd64 ~x86"
+SRC_URI="https://github.com/Kangie/sddm-sugar-candy/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
 IUSE="svg jpeg"
 
-# Require at least one kind of image support
+# Require at least one kind of image support. Kind of useless otherwise.
 REQUIRED_USE="!jpeg? ( svg )
 !svg? ( jpeg )"
 
@@ -34,9 +32,8 @@ svg? ( >=dev-qt/qtsvg-5.11 )
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
-# Git repo checks out to a subfolder
-#S="${WORKDIR}/sddm-sugar-candy"
-#EGIT_CHECKOUT_DIR=${WORKDIR}/${P}
+S="${WORKDIR}/sddm-sugar-candy-${PV}"
+
 src_install() {
 	local DOCS=( AUTHORS COPYING CHANGELOG.md README.md )
 	einstalldocs
