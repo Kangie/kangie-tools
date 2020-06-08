@@ -41,10 +41,6 @@ RDEPEND="${DEPEND}"
 
 src_prepare(){
 	sed -i -e "s/NAMES valac/NAMES valac-$(vala_best_api_version)/" cmake/FindVala.cmake || die
-	#sed -i '/$ENV{HOME}/d' CMakeLists.txt || die
-	#find . -type f -exec sed -i 's|/System/Applications/|/usr/bin/|g' {} \;
-	#find . -type f -exec sed -i 's|/System/Resources/|/usr/share/|g' {} \;
-	#find . -type f -exec sed -i 's|/Komorebi|/komorebi|g' {} \;
 	cmake-utils_src_prepare
 }
 
