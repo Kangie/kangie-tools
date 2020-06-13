@@ -46,13 +46,16 @@ src_install()
 
 	dodir /usr/lib/bjlib
 	dodir /lib/udev/rules.d
-	
+
 	dolib.so "${SHIPPED_LIBS}/"*.so*
 	insinto /usr/lib/bjlib
 	doins "${WORKDIR}/${MY_P}/com/ini/canon_mfp2_net.ini"
 
 	insinto /lib/udev/rules.d
 	doins "${S}/etc/"*.rules
+
+	insinto /usr/share/applications
+	doins "${FILESDIR}/${PN}.desktop"
 
 	emake DESTDIR="${D}" install
 }

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=scangearmp2
+Comment=Utility for scanning using Canon inkjet printers.
+Exec=/usr/bin/scangearmp2
+TryExec=scangearmp2
+
