@@ -1,0 +1,15 @@
+BDEPEND=dev-vcs/git >=dev-util/ninja-1.8.2 >=dev-util/cmake-3.20.5 virtual/pkgconfig
+DEFINED_PHASES=compile configure install prepare test unpack
+DEPEND=krb5? ( app-crypt/mit-krb5 ) ldap? ( net-nds/openldap ) pam? ( sys-libs/pam ) >=dev-libs/openssl-0.9.8e:0= acct-user/elog
+DESCRIPTION=A simple standalone weblog server
+EAPI=8
+HOMEPAGE=https://elog.psi.ch/elog/
+INHERIT=cmake systemd
+IUSE=krb5 ldap pam
+KEYWORDS=~amd64
+LICENSE=GPL-2+
+RDEPEND=krb5? ( app-crypt/mit-krb5 ) ldap? ( net-nds/openldap ) pam? ( sys-libs/pam ) >=dev-libs/openssl-0.9.8e:0= acct-user/elog
+SLOT=0
+SRC_URI=https://bitbucket.org/ritt/elog/get/338841043cb6.tar.gz -> elog-3.1.5_p20230218.tar.gz https://bitbucket.org/tmidas/mxml/get/4d4b4cf17bec.tar.gz -> tmidas-mxml-0.0.1_p20220215.tar.gz
+_eclasses_=toolchain-funcs	513c31b3346458ed1f3878b57da6d61c	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	ad475baa777c9978fa035216c8264a10	multiprocessing	b4e253ab22cef7b1085e9b67c7a3b730	ninja-utils	76050953ad5b70d7e09a6ca55558db92	xdg-utils	baea6080dd821f5562d715887954c9d3	cmake	6c921d868d090cc18e142a396f66f74a	systemd	5f4bb0758df2e483babf68cd517078ca
+_md5_=3b2e3548817788aa084c13f25fa7e124

@@ -1,0 +1,19 @@
+From ca533b932b981c04e050102bfc954aa3577ef441 Mon Sep 17 00:00:00 2001
+From: Matt Jolly <Matt.Jolly@footclan.ninja>
+Date: Sat, 15 Jul 2023 20:27:12 +1000
+Subject: [PATCH] cmake_minimum_required before project
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,7 @@
+ # CMakeLists.txt for ELOG project
+-project(ELOG)
+ cmake_minimum_required(VERSION 3.0)
++project(ELOG)
++
+ 
+ # compile options
+ option(USE_SSL  "Use OpenSSL library for https" ON)
+-- 
+2.41.0
+

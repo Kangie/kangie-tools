@@ -1,0 +1,21 @@
+[global]
+port = 8080
+; Uncomment the following line to enable SSL
+;SSL = 1
+; Required if SSL is enabled or behind a reverse proxy
+;URL = https://elog.host.domain/
+;SMTP host = smtp.host.domain
+Resource dir = /usr/share/elog
+Logbook dir = /var/lib/elog
+
+[demo]
+Theme = default
+Comment = General Linux Tips & Tricks
+Attributes = Author, Type, Category, Subject
+Options Type = Routine, Software Installation, Problem Fixed, Configuration, Other
+Options Category = General, Hardware, Software, Network, Other
+Extendable Options = Category
+Required Attributes = Author, Type
+Page Title = ELOG - $subject
+Reverse sort = 1
+Quick filter = Date, Type
