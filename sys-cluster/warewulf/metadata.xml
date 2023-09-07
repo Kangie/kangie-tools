@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>Matt.Jolly@footclan.ninja</email>
+		<name>Matt Jolly</name>
+	</maintainer>
+	<use>
+		<flag name="firewalld">
+			Enable support for
+			<pkg>net-firewall/firewalld</pkg>.
+		</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">hpcng/warewulf</remote-id>
+	</upstream>
+</pkgmetadata>

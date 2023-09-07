@@ -13,17 +13,16 @@ if [[ ${PV} == 9999 ]] ; then
 	EGIT_REPO_URI="https://github.com/hpcng/warewulf"
 	EGIT_BRANCH="development"
 else
-	MY_COMMIT=f1eab8c363e135eca608c7471464e0fb5460bae7
+	MY_COMMIT=791159c92682838f8eb28f12679a1ae5507d08fb
 	SRC_URI="https://github.com/hpcng/warewulf/archive/${MY_COMMIT}.tar.gz -> ${P}.tar.gz
-		https://deps.gentoo.zip/${P}-deps.tar.xz"
+		https://deps.gentoo.zip/${P}-vendor.tar.xz"
 	KEYWORDS="~amd64"
 	S="${WORKDIR}/${PN}-${MY_COMMIT}"
 fi
 
 LICENSE="Apache-2.0 BSD BSD-2 MIT"
 SLOT="0"
-IUSE="firewalld test"
-RESTRICT="!test? ( test )"
+IUSE="firewalld"
 
 # https://warewulf.org/docs/development/contents/installation.html#runtime-dependencies
 RDEPEND="
@@ -33,21 +32,9 @@ RDEPEND="
 	firewalld? ( net-firewall/firewalld )
 "
 
-# go >= 1.20 supports -skip for tests
 BDEPEND="
 	>=dev-lang/go-1.17
-	test? ( >=dev-lang/go-1.20 )
 "
-
-PATCHES=(
-	"${FILESDIR}"/warewulf-4.4.1-config-ip-error-handling.patch
-)
-
-src_prepare() {
-	default
-	# If using a dependency tarball rather than a vendor tarball update the manifest to prevent build failures
-	ego mod vendor
-}
 
 src_compile() {
 	# WWCLIENTDIR is an odd one out; it's a path relative to $WWOVERLAYDIR.
@@ -81,36 +68,7 @@ src_compile() {
 }
 
 src_test() {
-	# FEATURES="network-sandbox" causes test failures. Not a partucilar test, they all pass;
-	# it's just that the network sandboxing causes the test harness to panic.
-	local SKIPTESTS=()
-	# TODO: This is every test group that I can identify; test phase still fails with no tests selected
-	# so re-enable this at some point and I guess RESTRICT="network-sandbox? (test)"?
-	SKIPTESTS+=("Test_nodeYaml_FindByIpaddr")
-	SKIPTESTS+=("TestArgsContainerBuild")
-	SKIPTESTS+=("TestArgsOverlayChmod")
-	SKIPTESTS+=("TestArgsOverlayMkdir")
-	SKIPTESTS+=("Test_readFromHost_single")
-	SKIPTESTS+=("Test_readFromHost_multiple")
-	SKIPTESTS+=("Test_readFromContainer_single")
-	SKIPTESTS+=("Test_readFromContainer_multiple")
-	SKIPTESTS+=("Test_readFromBoth_multiple")
-	SKIPTESTS+=("Test_checkConflicts_empty")
-	SKIPTESTS+=("Test_checkConflicts_single")
-	SKIPTESTS+=("Test_checkConflicts_match")
-	SKIPTESTS+=("Test_checkConflicts_conflict")
-	SKIPTESTS+=("Test_getOnlyContainerLines")
-	SKIPTESTS+=("Test_needsSync_empty")
-	SKIPTESTS+=("Test_needsSync_containerOnly")
-	SKIPTESTS+=("Test_needsSync_hostOnly")
-	SKIPTESTS+=("Test_needsSync_match")
-	SKIPTESTS+=("Test_needsSync_differ")
-	SKIPTESTS+=("Test_onlyHost")
-	SKIPTESTS+=("Test_onlyContainer")
-	SKIPTESTS+=("Test_match")
-	SKIPTESTS+=("Test_differ")
-
-	ego test -v ./... -skip "$(printf '%s|' "${SKIPTESTS[@]}")"
+	ego test -v ./...
 }
 
 src_install() {
