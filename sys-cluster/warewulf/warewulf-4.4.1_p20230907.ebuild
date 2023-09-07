@@ -39,6 +39,10 @@ BDEPEND="
 	test? ( >=dev-lang/go-1.20 )
 "
 
+PATCHES=(
+	"${FILESDIR}"/warewulf-4.4.1-config-ip-error-handling.patch
+)
+
 src_prepare() {
 	default
 	# If using a dependency tarball rather than a vendor tarball update the manifest to prevent build failures
