@@ -36,6 +36,11 @@ RDEPEND="
 	sys-apps/systemd:=
 "
 
+PATCHES=(
+	"${FILESDIR}/${P}-rundir-exists.patch"
+	"${FILESDIR}/${P}-state-information-loc.patch"
+)
+
 src_prepare() {
 	default
 	eautoreconf
