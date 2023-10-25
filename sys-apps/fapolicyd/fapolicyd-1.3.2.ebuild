@@ -18,7 +18,7 @@ fi
 LICENSE="GPL-3+"
 SLOT="0"
 
-RDEPEND="
+BDEPEND="
 	dev-libs/openssl
 	sys-apps/file
 	sys-libs/libcap-ng
@@ -27,7 +27,13 @@ RDEPEND="
 	dev-libs/uthash
 "
 
-DEPEND=${RDEPEND}
+DEPEND=${BDEPEND}
+
+RDEPEND="
+	${BDEPEND}
+	acct-user/fapolicyd
+	acct-group/fapolicyd
+"
 
 src_prepare() {
 	default
@@ -36,6 +42,11 @@ src_prepare() {
 
 src_configure() {
 	econf --with-audit --disable-shared
+}
+
+src_install() {
+	keepdir /etc/fapolicyd/rules.d
+	default
 }
 
 pkg_postinst() {

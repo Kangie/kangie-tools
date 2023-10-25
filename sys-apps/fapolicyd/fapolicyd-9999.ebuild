@@ -18,7 +18,7 @@ fi
 LICENSE="GPL-3+"
 SLOT="0"
 
-RDEPEND="
+BDEPEND="
 	dev-libs/openssl
 	sys-apps/file
 	sys-libs/libcap-ng
@@ -27,7 +27,12 @@ RDEPEND="
 	dev-libs/uthash
 "
 
-DEPEND=${RDEPEND}
+DEPEND=${BDEPEND}
+
+RDEPEND="
+	${BDEPEND}
+	acct-user/fapolicyd
+"
 
 src_prepare() {
 	default
