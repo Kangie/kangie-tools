@@ -19,11 +19,11 @@ LICENSE="GPL-3+"
 SLOT="0"
 
 BDEPEND="
-	dev-libs/openssl
+	dev-libs/openssl:=
 	sys-apps/file
 	sys-libs/libcap-ng
 	sys-libs/libseccomp
-	dev-db/lmdb
+	dev-db/lmdb:=
 	dev-libs/uthash
 "
 
@@ -33,6 +33,7 @@ RDEPEND="
 	${BDEPEND}
 	acct-user/fapolicyd
 	acct-group/fapolicyd
+	sys-apps/systemd:=
 "
 
 src_prepare() {
@@ -40,13 +41,16 @@ src_prepare() {
 	eautoreconf
 }
 
+# https://github.com/linux-application-whitelisting/fapolicyd/blob/main/BUILD.md?plain=1
 src_configure() {
-	econf --with-audit --disable-shared
+	econf --with-audit --without-rpm --disable-shared
 }
 
 src_install() {
 	keepdir /etc/fapolicyd/rules.d
 	default
+	keepdir /var/lib/fapolicyd
+	fowners -R fapolicyd:fapolicyd /var/lib/fapolicyd
 }
 
 pkg_postinst() {
@@ -59,10 +63,10 @@ pkg_postinst() {
 	local rulesd
 	rulesd="${EROOT}/usr/share/fapolicyd/sample-rules/"
 
-	local python_path="$(readlink -f /usr/bin/python3 | sed 's/\//\\\\\//g')"
+	#local python_path="$(readlink -f /usr/bin/python3 | sed 's/\//\\\\\//g')"
 	# drop dnf from system-updaters and whitelist portage instead
-	head -n 3 ${rulesd}/21-updaters.rules > ${rulesd}/21-updaters.rules
-	echo "allow perm=open exe=${python_path} comm=portage : all" >> ${rulesd}/21-updaters.rules || die
+	#head -n 3 ${rulesd}/21-updaters.rules > ${rulesd}/21-updaters.rules
+	#echo "allow perm=open exe=${python_path} comm=portage : all" >> ${rulesd}/21-updaters.rules || die
 
 	# This detects the run-time linker
 	local interpret
