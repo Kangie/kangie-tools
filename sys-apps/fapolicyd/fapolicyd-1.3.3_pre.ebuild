@@ -11,8 +11,10 @@ if [[ ${PV} == 9999 ]]; then
 		inherit git-r3
 		EGIT_REPO_URI="https://github.com/linux-application-whitelisting/fapolicyd.git"
 else
-	SRC_URI="https://github.com/linux-application-whitelisting/fapolicyd/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
+	MY_COMMIT=d81d83826cceadbdf4fab9c722ba1095f999ec02
+	SRC_URI="https://github.com/kangie/fapolicyd/archive/${MY_COMMIT}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="~amd64"
+	S="${WORKDIR}/fapolicyd-${MY_COMMIT}"
 fi
 
 LICENSE="GPL-3+"
@@ -36,11 +38,6 @@ RDEPEND="
 	sys-apps/systemd:=
 "
 
-PATCHES=(
-	"${FILESDIR}/${P}-rundir-exists.patch"
-	"${FILESDIR}/${P}-state-information-loc.patch"
-)
-
 src_prepare() {
 	default
 	eautoreconf
@@ -48,7 +45,7 @@ src_prepare() {
 
 # https://github.com/linux-application-whitelisting/fapolicyd/blob/main/BUILD.md?plain=1
 src_configure() {
-	econf --with-audit --without-rpm --disable-shared
+	econf --with-audit --without-rpm --with-ebuild --disable-shared
 }
 
 src_install() {
@@ -56,6 +53,14 @@ src_install() {
 	default
 	keepdir /var/lib/fapolicyd
 	fowners -R fapolicyd:fapolicyd /var/lib/fapolicyd
+	# the default of 50(MB?) is too small for a reasonably sized portage system.
+	sed -i -e 's/db_max_size.*/db_max_size = 100/' "${ED}"/etc/fapolicyd/fapolicyd.conf || die
+	sed -i -e 's/rpmdb/ebuilddb/' "${ED}"/etc/fapolicyd/fapolicyd.conf || die
+
+	# whitelist portage (todo: detect this in postinst)
+	echo 'allow perm=open exe=/usr/bin/python-exec2c comm=portage : all' \
+		>> "${ED}"/etc/fapolicyd/rules.d/21-updaters.rules || die
+
 }
 
 pkg_postinst() {
