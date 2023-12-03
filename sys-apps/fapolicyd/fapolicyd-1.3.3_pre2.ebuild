@@ -11,7 +11,7 @@ if [[ ${PV} == 9999 ]]; then
 		inherit git-r3
 		EGIT_REPO_URI="https://github.com/linux-application-whitelisting/fapolicyd.git"
 else
-	MY_COMMIT=d81d83826cceadbdf4fab9c722ba1095f999ec02
+	MY_COMMIT=dc272c217cf778f7907b95fcb42503d82b3e5590
 	SRC_URI="https://github.com/kangie/fapolicyd/archive/${MY_COMMIT}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="~amd64"
 	S="${WORKDIR}/fapolicyd-${MY_COMMIT}"
@@ -35,7 +35,6 @@ RDEPEND="
 	${BDEPEND}
 	acct-user/fapolicyd
 	acct-group/fapolicyd
-	sys-apps/systemd:=
 "
 
 src_prepare() {
@@ -60,7 +59,12 @@ src_install() {
 	# whitelist portage (todo: detect this in postinst)
 	echo 'allow perm=open exe=/usr/bin/python-exec2c comm=portage : all' \
 		>> "${ED}"/etc/fapolicyd/rules.d/21-updaters.rules || die
+	fowners -R fapolicyd:fapolicyd /etc/fapolicyd
 
+}
+
+src_test(){
+	emake check
 }
 
 pkg_postinst() {
