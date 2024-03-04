@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>Kangie@gentoo.org</email>
+    <description>Primary maintainer</description>
+  </maintainer>
+  <longdescription>
+    Komorebi is an animated wallpaper manager for all Linux platforms.
+    It provides users with fully customisable image, video, and web page wallpapers
+    that can be tweaked at any time!
+  </longdescription>
+  <upstream>
+    <remote-id type="github">Komorebi-Fork/komorebi</remote-id>
+  </upstream>
+</pkgmetadata>
