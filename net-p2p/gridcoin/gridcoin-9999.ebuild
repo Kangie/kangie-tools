@@ -22,8 +22,8 @@ fi
 LICENSE="MIT"
 SLOT="0"
 
-IUSE_GUI="dbus gui"
-IUSE_OPTIONAL="doc pic qrcode static test upnp"
+IUSE_GUI="+dbus +gui"
+IUSE_OPTIONAL="doc pic +qrcode static test +upnp"
 IUSE_SYSTEM="system-bdb system-ldb"
 IUSE_EXPAND="cpu_flags_x86_sha cpu_flags_x86_avx2 cpu_flags_x86_sse4_1 cpu_flags_arm_sha1"
 IUSE="${IUSE_GUI} daemon ${IUSE_OPTIONAL} ${IUSE_EXPAND} ${IUSE_SYSTEM}"
@@ -36,7 +36,7 @@ REQUIRED_USE="
 "
 
 BDEPEND="
-	doc? ( app-doc/doxygen )
+	doc? ( app-text/doxygen )
 "
 # test? ( dev-util/xxd )
 
@@ -62,14 +62,14 @@ RDEPEND="
 	)
 	qrcode? ( media-gfx/qrencode )
 	system-bdb? ( sys-libs/db:5.3[cxx] )
-	system-ldb? ( >=dev-db/leveldb-1.23 )
+	system-ldb? ( >=dev-libs/leveldb-1.23 )
 	upnp? ( >=net-libs/miniupnpc-1.9.20140401 )
 "
 
 DEPEND="${RDEPEND}"
 
 PATCHES=(
-	${FILESDIR}/gridcoin-9999-find-leveldb.patch
+	"${FILESDIR}"/gridcoin-9999-find-leveldb.patch
 )
 
 src_configure() {
@@ -125,12 +125,12 @@ src_install() {
 	fi
 
 	if use daemon; then
-			newbin src/gridcoinresearchd gridcoinresearchd${suffix}
+			newbin "${BUILD_DIR}"/src/gridcoinresearchd gridcoinresearchd${suffix}
 			newman doc/gridcoinresearchd.1 gridcoinresearchd${suffix}.1
 			newinitd "${FILESDIR}"/gridcoin${suffix}.init gridcoin${suffix}
 	fi
 	if use gui; then
-		newbin src/qt/gridcoinresearch gridcoinresearch${suffix}
+		newbin "${BUILD_DIR}"/src/qt/gridcoinresearch gridcoinresearch${suffix}
 		newman doc/gridcoinresearch.1 gridcoinresearch${suffix}.1
 		newmenu contrib/gridcoinresearch.desktop gridcoinresearch${suffix}.desktop
 		for size in 16 22 24 32 48 64 128 256 ; do

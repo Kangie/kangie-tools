@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit autotools flag-o-matic desktop systemd
+inherit cmake desktop flag-o-matic optfeature systemd
 
 DESCRIPTION="Gridcoin Proof-of-Stake based crypto-currency that rewards BOINC computation"
 HOMEPAGE="https://gridcoin.us/"
@@ -22,25 +22,34 @@ fi
 LICENSE="MIT"
 SLOT="0"
 
-IUSE_GUI="dbus gui"
-IUSE_DAEMON="daemon"
-IUSE_OPTIONAL="bench +boinc debug +hardened libraries pic qrcode static test upnp utils"
-IUSE="${IUSE_GUI} ${IUSE_DAEMON} ${IUSE_OPTIONAL}"
-
+IUSE_GUI="+dbus +gui"
+IUSE_OPTIONAL="doc pic +qrcode static test +upnp"
+IUSE_SYSTEM="system-bdb system-ldb"
+IUSE_EXPAND="cpu_flags_x86_sha cpu_flags_x86_avx2 cpu_flags_x86_sse4_1 cpu_flags_arm_sha1"
+IUSE="${IUSE_GUI} daemon ${IUSE_OPTIONAL} ${IUSE_EXPAND} ${IUSE_SYSTEM}"
 RESTRICT="!test? ( test )"
 
-REQUIRED_USE="|| ( daemon gui ) dbus? ( gui ) qrcode? ( gui )"
+REQUIRED_USE="
+	|| ( daemon gui )
+	dbus? ( gui )
+	qrcode? ( gui )
+"
+
+BDEPEND="
+	doc? ( app-text/doxygen )
+"
+# test? ( dev-util/xxd )
 
 RDEPEND="
 	acct-group/gridcoin
 	acct-user/gridcoin
 	>=dev-libs/boost-1.73.0:=
-	dev-libs/libevent
+	>=dev-libs/libsecp256k1-0.2.0
 	>=dev-libs/libzip-1.3.0:=
 	>=dev-libs/openssl-1.1.1d:=
+	dev-libs/libevent
+	dev-libs/univalue
 	net-misc/curl
-	sys-libs/db:5.3[cxx]
-	boinc? ( sci-misc/boinc )
 	dbus? ( dev-qt/qtdbus:5 )
 	gui? (
 		dev-qt/linguist-tools:5
@@ -52,40 +61,60 @@ RDEPEND="
 		dev-qt/qtwidgets:5
 	)
 	qrcode? ( media-gfx/qrencode )
+	system-bdb? ( sys-libs/db:5.3[cxx] )
+	system-ldb? ( >=dev-libs/leveldb-1.23 )
 	upnp? ( >=net-libs/miniupnpc-1.9.20140401 )
-	utils? ( net-p2p/bitcoin-cli dev-util/bitcoin-tx )"
+"
+
 DEPEND="${RDEPEND}"
 
-#AT_NOEAUTOHEADER="yes"
-
-src_prepare() {
-	default
-	#AT_NOEAUTOHEADER=1 eautoreconf
-	eautoconf --install --force
-	#autoreconf --install --force --warnings=all
-	#autoreconf --install || die
-	#./autogen.sh || die
-}
+PATCHES=(
+	"${FILESDIR}"/gridcoin-9999-find-leveldb.patch
+)
 
 src_configure() {
-	BDB_VER="$(best_version sys-libs/db:5.3)"
-	export BDB_CFLAGS="-I${ESYSROOT}/usr/include/db${BDB_VER:12:3}"
-	export BDB_LIBS="-ldb_cxx-${BDB_VER:12:3}"
 	append-flags -Wa,--noexecstack
-	econf \
-		$(use_enable bench) \
-		$(use_enable debug) \
-		$(use_enable hardened) \
-		$(use_enable static) \
-		$(use_enable test tests) \
-		$(use_with daemon) \
-		$(use_with dbus qtdbus) \
-		$(use_with gui gui qt5) \
-		$(use_with libraries libs) \
-		$(use_with pic) \
-		$(use_with qrcode qrencode) \
-		$(use_with upnp miniupnpc) \
-		$(use_with utils)
+	local mycmakeargs=()
+
+	# Use system libs
+	mycmakeargs+=(
+		-DSYSTEM_BDB=$(usex system-bdb)
+		-DSYSTEM_LEVELDB=$(usex system-ldb)
+		-DSYSTEM_SECP256K1=ON
+		-DSYSTEM_UNIVALUE=ON
+		-DSYSTEM_XXD=OFF
+	)
+
+	# This _may_ need to be the opposite of $(usex pic)
+	if use amd64; then
+		mycmakeargs+=(
+			-DUSE_ASM_X86_64=ON
+		)
+	fi
+	# CPU_FLAGS_* dependent options
+	# I _think_ sha-ni for ARM is sha1
+	mycmakeargs+=(
+		-DENABLE_ARM_SHANI=$(usex cpu_flags_arm_sha1)
+		-DENABLE_AVX2=$(usex cpu_flags_x86_avx2)
+		-DENABLE_SSE41=$(usex cpu_flags_x86_sse4_1)
+		-DENABLE_X86_SHANI=$(usex cpu_flags_x86_sha)
+	)
+
+	# Anything that can trivially be handled via USEX
+	mycmakeargs+=(
+		-DDEFAULT_UPNP=$(usex upnp)
+		-DENABLE_DAEMON=$(usex daemon)
+		-DENABLE_DOCS=$(usex doc)
+		-DENABLE_GUI=$(usex gui)
+		-DENABLE_PIE=$(usex pic)
+		-DENABLE_QRENCODE=$(usex qrcode)
+		-DENABLE_TESTS=$(usex test)
+		-DENABLE_UPNP=$(usex upnp)
+		-DLUPDATE=OFF
+		-DUSE_DBUS=$(usex dbus)
+	)
+
+	cmake_src_configure
 }
 
 src_install() {
@@ -96,12 +125,12 @@ src_install() {
 	fi
 
 	if use daemon; then
-			newbin src/gridcoinresearchd gridcoinresearchd${suffix}
+			newbin "${BUILD_DIR}"/src/gridcoinresearchd gridcoinresearchd${suffix}
 			newman doc/gridcoinresearchd.1 gridcoinresearchd${suffix}.1
 			newinitd "${FILESDIR}"/gridcoin${suffix}.init gridcoin${suffix}
 	fi
 	if use gui; then
-		newbin src/qt/gridcoinresearch gridcoinresearch${suffix}
+		newbin "${BUILD_DIR}"/src/qt/gridcoinresearch gridcoinresearch${suffix}
 		newman doc/gridcoinresearch.1 gridcoinresearch${suffix}.1
 		newmenu contrib/gridcoinresearch.desktop gridcoinresearch${suffix}.desktop
 		for size in 16 22 24 32 48 64 128 256 ; do
@@ -151,4 +180,5 @@ pkg_postinst() {
 		elog "gpasswd -a gridcoin boinc"
 		elog
 	fi
+	optfeature BOINC proof-of-work mining sci-misc/boinc
 }

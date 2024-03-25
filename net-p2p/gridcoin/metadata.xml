@@ -22,7 +22,7 @@
 			Enable desktop notifications via DBus
 		</flag>
 		<flag name="doc">
-			Create and install <pkg>app-doc/doxygen</pkg>-based documentation
+			Create and install <pkg>app-text/doxygen</pkg>-based documentation
 		</flag>
 		<flag name="gui">
 			Build the Qt GUI
@@ -33,23 +33,17 @@
 		<flag name="upnp">
 			Enable Universal Plug and Play
 		</flag>
-		<flag name="hardened">
-			Apply hardening to generated binaries
-		</flag>
 		<flag name="pic">
 			Disable optimized assembly code that is not PIC friendly
 		</flag>
-		<flag name="bench">
-			Compile benchmarks
+		<flag name="system-ldb">
+			Use system copy of <pkg>dev-libs/leveldb</pkg>
 		</flag>
-		<flag name="utils">
-			Build bitcoin-cli and bitcoin-tx utilities
-		</flag>
-		<flag name="libraries">
-			Build extra libraries
-		</flag>
-		<flag name="debug">
-			Use debug compiler flags and macros
+		<flag name="system-bdb">
+			Use system copy of <pkg>sys-libs/db</pkg>
 		</flag>
 	</use>
+	<upstream>
+		<remote-id type="github">gridcoin/Gridcoin-Research</remote-id>
+	</upstream>
 </pkgmetadata>
