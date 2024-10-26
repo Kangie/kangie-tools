@@ -11,7 +11,7 @@ if [[ ${PV} == 9999 ]]; then
 		inherit git-r3
 		EGIT_REPO_URI="https://github.com/linux-application-whitelisting/fapolicyd.git"
 else
-	MY_COMMIT=dc272c217cf778f7907b95fcb42503d82b3e5590
+	MY_COMMIT=396803ff7a1b935945bfd7fb60d56c5708f8c897
 	SRC_URI="https://github.com/kangie/fapolicyd/archive/${MY_COMMIT}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="~amd64"
 	S="${WORKDIR}/fapolicyd-${MY_COMMIT}"
@@ -60,6 +60,8 @@ src_install() {
 	echo 'allow perm=open exe=/usr/bin/python-exec2c comm=portage : all' \
 		>> "${ED}"/etc/fapolicyd/rules.d/21-updaters.rules || die
 	fowners -R fapolicyd:fapolicyd /etc/fapolicyd
+	# update upstream kernel filter to match gentoo paths
+	sed -i -e 's usr/src/kernel\* usr/src/linux\* ' "${ED}"/etc/fapolicyd/fapolicyd-filter.conf || die
 
 }
 
@@ -91,7 +93,7 @@ pkg_postinst() {
 					| rev)
 	head -n 3 ${rulesd}/43-known-elf.rules > ${rulesd}/43-known-elf.rules
 	echo "allow perm=execute all : path=${interpret} trust=1" >> ${rulesd}/43-known-elf.rules || die
-	ewarn "hit sunt draconis"
+	ewarn "hic sunt dracones"
 	ewarn "This is incredibly experimental."
 	ewarn "Only use \`/usr/sbin/fapolicyd --permissive --debug\`"
 }
