@@ -35,6 +35,7 @@ RDEPEND="
 	${BDEPEND}
 	acct-user/fapolicyd
 	acct-group/fapolicyd
+	sys-apps/systemd:=
 "
 
 src_prepare() {
@@ -65,7 +66,7 @@ src_install() {
 
 }
 
-src_test(){
+src_test() {
 	emake check
 }
 
